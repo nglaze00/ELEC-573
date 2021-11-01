@@ -1,2 +1,2 @@
 # ELEC-573
-code for ELEC 573 assignments + project
+code + slides for ELEC 573 
