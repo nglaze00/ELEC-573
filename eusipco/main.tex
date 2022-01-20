@@ -1,0 +1,264 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+\begin{document}
+
+\title{Graph Representation Learning for Medical Event Recurrence Prediction*\\
+\thanks{Identify applicable funding agency here. (do UTHealth or D2K go here?)}
+}
+
+\author{\IEEEauthorblockN{Nicholas Glaze}
+\IEEEauthorblockA{\textit{Department of Electrical and Computer Engineering} \\
+\textit{Rice University}\\
+Houston, Texas, USA \\
+nglaze00@gmail.com}
+\and
+\IEEEauthorblockN{Artun Bayer}
+\IEEEauthorblockA{\textit{Department of Electrical and Computer Engineering} \\
+\textit{Rice University}\\
+Houston, Texas, USA \\
+email address or ORCID}
+\and
+\IEEEauthorblockN{Xiaoqian Jiang}
+\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+\textit{name of organization (of Aff.)}\\
+City, Country \\
+email address or ORCID}
+\and
+\IEEEauthorblockN{other UTH mentors}
+\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+\textit{name of organization (of Aff.)}\\
+City, Country \\
+email address or ORCID}
+\and
+\IEEEauthorblockN{Santiago Segarra}
+\IEEEauthorblockA{\textit{Department of Electrical and Computer Engineering} \\
+\textit{Rice University}\\
+Houston, Texas, USA \\
+email address or ORCID}
+\and
+\IEEEauthorblockN{6\textsuperscript{th} Given Name Surname}
+\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+\textit{name of organization (of Aff.)}\\
+City, Country \\
+email address or ORCID}
+}
+
+\maketitle
+
+\begin{abstract}
+    We introduce a graph representation learning architecture to predict recurrence of medical events. 
+    We demonstrate its effectiveness for predicting recurrent strokes using electronic health records (EHRs), which are common, have high mortality rates, and can be mitigated with preventative care
+\end{abstract}
+
+\begin{IEEEkeywords}
+TODO
+\end{IEEEkeywords}
+
+\section{Introduction}
+~1 pg
+\subsection{Recurrent strokes}
+\begin{itemize}
+    \item Strokes are very common, and those who suffer them can permanently lose many of the skills necessary for daily life. Also, strokes account for ~10\% of deaths worldwide.
+    \item Stroke recurrence increases mortality rate 17x, so understanding how to predict and mitigate recurrent strokes is therefore incredibly important to reducing patients' rates of mortality, disability, and financial hardship.
+\end{itemize}
+
+\subsection{Related work}
+\begin{itemize}
+    \item Machine learning has been applied to predict recurrent strokes using electronic health records (describe here), but hasn't given great results {\color{red}(do we need to describe other recent research, if we'll only compare with basic benchmarks?})
+    \item Graph representation learning (in particular, the HORDE framework) has been successfully applied to other downstream medical tasks using EHRs, so it's a good candidate to use here.
+\end{itemize}
+
+\subsection{Overview of the paper}
+{\color{red}Other papers usually have a summary at the end of the intro, so these are the items we might include in that summary (would probably pick a few)}
+\begin{itemize}
+    \item The problem we're solving
+    \item The HORDE graph framework
+    \item The architecture we introduce
+    \item The stroke dataset we evaluate it on, plus experiment results + our analysis
+    \item Conclusion, which includes practical stroke-related benefits for this particular model
+\end{itemize}
+
+\section{Problem definition}
+~0.5 pg
+We leverage data observed about a patient during medical appointments to predict whether a medical event they previously experienced will recur. 
+Given a matrix $\bold{X} \in \mathbb{R}^{T \times N}$ describing $N$ features of a patient's condition at each of $T$ timesteps, 
+    and a vector $\bold{d} \in \mathbb{R}^M$ describing $M$ time-invariant characteristics of the patient, 
+    we propose an architecture that learns a parametrized function $f_\theta : (\bold{X}, \bold{d}) \rightarrow \left[0, 1\right]$, 
+    with parameters $\theta$, that computes the probability that the event will recur for the patient within an $m$-month window. 
+
+Additional things:
+\begin{itemize}
+    \item Timesteps can be irregular, both inter- and intra-patient ({\color{red} do we need to justify that we ignore this irregularity? or can we just say that it works anyway)}
+    \item {\color{red}Not really sure how people generally format mathematical descriptions of ML problems, would like some advice there -- I feel like I'm probably missing stuff}
+\end{itemize}
+
+\section{Proposed framework}
+~1-1.5 pg, leaning towards 1?
+\begin{itemize}
+    \item We propose a graph representation learning framework for recurrent event prediction based on time-varying medical data.
+    \item The framework has two parts: first, we construct the HORDE graph out of the available data. Second, we apply our new architecture, (Name here)
+\end{itemize}
+
+\subsection{HORDE framework}
+\begin{itemize}
+    \item We use the HORDE framework, introduced by (reference), to represent the time-varying matrix X as a heterogeneous network.
+    \item the HORDE graph is constructed with both patients and features as nodes, drawing edges, weighted by feature value, 
+            between patient and feature nodes at timesteps where that patient has a non-zero value for that feature
+    \item Why is this good? Efficient (EHRs are sparse), allows application of GCNs, supports heterogeneous feature types + including relationships (edges) between features
+\end{itemize}
+
+\subsection{Our architecture}
+\begin{itemize}
+    \item We propose a new architecture, inspired by the one used in the HORDE framework, to predict event recurrence.
+    \item Transform each timestep graph using standard GCN layer (mathematically describe, but not that much since people know them now).
+            This gives us a vector representing each patient at each timestep (we take only the patient nodes)
+    \item {\color{red} Should we describe architecture variations (Laplacian, HetGCN) here or in experiments section?}
+    \item Stack each patient's vectors into a time series, then apply an LSTM layer (mathematically describe, say why it's good here)
+            This gives us a single vector per patient
+    \item Concat the vector with the demographics vector, then put in dense layer to get final probability
+    \item {\color{red} do we need to discuss why we chose this architecture, beyond "gcns are good for graphs and lstms are good for time series"?}
+\end{itemize}
+
+\section{Experiments}
+~2 pg
+
+2 experiments: 1. overall comparison, ours vs. baselines vs. variations of ours, 2. stroke type breakdown
+
+\subsection{Recurrent stroke dataset}
+
+In working with the University of Texas Health Science Center at Houston (UTHealth) for my senior capstone, 
+I have been granted access to a labeled database of EHRs, over up to 69 encounters, for 4,776 UTHealth hospital patients---one of the most comprehensive in the world of its kind. 
+Each patient in the database suffered at least one stroke, and approximately 25\% of these patients suffered recurrent strokes within one year as well. 
+The EHRs are represented in tabular form, and consist of approximately 5,000 features describing patients' demographics, along with their diagnoses, lab tests, measurements taken, and other information throughout their medical appointments. 
+The raw text of approximately 2 million clinical notes is also included in the dataset, along around 8,000 CT and MRI scans; however, this project leverages only the EHRs, and the other modalities will be incorporated in future work.
+
+\begin{itemize}
+    \item UTH stroke patient dataset 2019-2020
+    \item Size of dataset, distribution of stroke recurrence window lengths
+    \item EHR description; breakdown by category?
+    \item Could mention image / text data, but it's not related to this project
+\end{itemize}
+
+\subsection{Experiment parameters}
+\begin{itemize}
+    \item Describe hyperparameters common for all experiments
+    \item Describe baselines + variations we compare to
+    \item Describe train / test splits (CV) and evaluation metrics
+\end{itemize}
+
+\subsection{Overall model performance comparison}
+
+\begin{table}[htbp]
+    \caption{Performance on 1-year recurrence window.}
+    \begin{center}
+    \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    % \textbf{Architecture}&\multicolumn{3}{|c|}{\textbf{Table Column Head}} \\
+    &\multicolumn{4}{|c|}{\textbf{Metric}} \\
+    \cline{2-5} 
+    \textbf{Architecture} & \textbf{\textit{Specificity}}& \textbf{\textit{Sensitivity}}& \textbf{\textit{AUROC}} &\textbf{\textit{AUPRC}}\\
+    \hline
+    Logistic Regression& 0. & 0. & 0. & 0. \\
+    \hline
+    SVM& 0. & 0. & 0. & 0. \\
+    \hline
+    Gradient-boosted trees& 0. & 0. & 0. & 0. \\
+    \hline
+    More& 0. & 0. & 0. & 0. \\
+    \hline
+    Benchmarks& 0. & 0. & 0. & 0. \\
+    \hline
+    Here& 0. & 0. & 0. & 0. \\
+    \hline
+    Ours& 0. & 0. & 0. & 0. \\
+    \hline
+    Ours$_L$& 0. & 0. & 0. & 0. \\
+    \hline
+    Ours$_H$& 0. & 0. & 0. & 0. \\
+    \hline
+    Ours$_{L+H}$& 0. & 0. & 0. & 0. \\
+    \hline
+    % \multicolumn{5}{l}{$^{\mathrm{a}}$Sample of a Table footnote.}
+    \end{tabular}
+    \label{tab1}
+    \end{center}
+    \end{table}
+
+Analysis of results, which will hopefully be that ours is the best!
+
+{\color{red} Is it interesting to include architectures like (first few timesteps only), (more GCN layers), etc.?}
+
+\subsection{Performance by stroke type}
+
+Remove spec / sens? they're interesting though
+\begin{table}[htbp]
+    \caption{Performance on 1-year recurrence window.}
+    \begin{center}
+    \begin{tabular}{|c|c|c|c|c|c|c|}
+    \hline
+    % \textbf{Architecture}&\multicolumn{3}{|c|}{\textbf{Table Column Head}} \\
+    &\multicolumn{2}{|c|}{\textbf{Test dataset}}&\multicolumn{4}{|c|}{\textbf{Metric}} \\
+    \cline{2-7} 
+    \textbf{Initial stroke type} & \textbf{\textit{Samples}}& \textbf{\textit{Pos. \%}}& \textbf{\textit{Specificity}}& \textbf{\textit{Sensitivity}}& \textbf{\textit{AUROC}} &\textbf{\textit{AUPRC}}\\
+    \hline
+    All& 0. & 0. & 0. & 0. & 0. & 0. \\
+    \hline
+    AIS& 0. & 0. & 0. & 0. & 0. & 0. \\
+    \hline
+    ICH& 0. & 0. & 0. & 0. & 0. & 0. \\
+    \hline
+    SAH& 0. & 0. & 0. & 0. & 0. & 0. \\
+    \hline
+    TIA& 0. & 0. & 0. & 0. & 0. & 0. \\
+    \hline
+    Multi-type& 0. & 0. & 0. & 0. & 0. & 0. \\
+    \hline
+    A few unions& 0. & 0. & 0. & 0. & 0. & 0. \\
+    \hline
+    % \multicolumn{5}{l}{$^{\mathrm{a}}$Sample of a Table footnote.}
+    \end{tabular}
+    \label{tab1}
+    \end{center}
+    \end{table}
+
+
+\begin{itemize}
+    \item Detailed breakdown for best model
+    \item Comparison of the top few models on the most interesting stroke type subset
+    \item Practical applications; why is this experiment important?
+    \item {\color{red} how much to emphasize that we are working with UTHealth and our results will practically benefit them? I imagine that could be cool, if EUSIPCO people care about that kind of thing}
+\end{itemize}
+
+
+\section{Conclusion}
+
+\begin{itemize}
+    \item We introduced a medical event recurrence prediction architecture, and demonstrated its effectiveness for the specific task of recurrent stroke.
+    \item Our model can enable more efficient application of preventative care, allowing hospitals to give necessary care to more patients, saving more lives.
+    \item Future work includes incorporating additional data modalities, which our model supports.
+    \item Anything else?
+\end{itemize}
+
+\section*{Acknowledgment}
+
+Capstone team members + anyone else at UTH who helped
+
+\begin{thebibliography}{00}
+\bibitem{b1} G. Eason, B. Noble, and I. N. Sneddon, ``On certain integrals of Lipschitz-Hankel type involving products of Bessel functions,'' Phil. Trans. Roy. Soc. London, vol. A247, pp. 529--551, April 1955.
+\bibitem{b2} J. Clerk Maxwell, A Treatise on Electricity and Magnetism, 3rd ed., vol. 2. Oxford: Clarendon, 1892, pp.68--73.
+\bibitem{b3} I. S. Jacobs and C. P. Bean, ``Fine particles, thin films and exchange anisotropy,'' in Magnetism, vol. III, G. T. Rado and H. Suhl, Eds. New York: Academic, 1963, pp. 271--350.
+\bibitem{b4} K. Elissa, ``Title of paper if known,'' unpublished.
+\bibitem{b5} R. Nicole, ``Title of paper with only first word capitalized,'' J. Name Stand. Abbrev., in press.
+\bibitem{b6} Y. Yorozu, M. Hirano, K. Oka, and Y. Tagawa, ``Electron spectroscopy studies on magneto-optical media and plastic substrate interface,'' IEEE Transl. J. Magn. Japan, vol. 2, pp. 740--741, August 1987 [Digests 9th Annual Conf. Magnetics Japan, p. 301, 1982].
+\bibitem{b7} M. Young, The Technical Writer's Handbook. Mill Valley, CA: University Science, 1989.
+\end{thebibliography}
+\end{document}
