@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1642733410 "j:/Documents/repos/ELEC-573/eusipco/main.tex" "main.pdf" "main" 1642733411
+["pdflatex"] 1643005022 "j:/Documents/repos/ELEC-573/eusipco/main.tex" "main.pdf" "main" 1643005023
   "e:/texlive/2021/texmf-dist/fonts/enc/dvips/base/8r.enc" 1641342039 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "e:/texlive/2021/texmf-dist/fonts/map/fontname/texfonts.map" 1641342730 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "e:/texlive/2021/texmf-dist/fonts/tfm/adobe/times/ptmb7t.tfm" 1641347716 2172 fd0c924230362ff848a33632ed45dc23 ""
@@ -83,9 +83,9 @@
   "e:/texlive/2021/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1641348917 4412718 421b36f2e4793235d72607cd5db9e0b1 ""
   "e:/texlive/2021/texmf-var/web2c/pdftex/pdflatex.fmt" 1641348990 2820104 c820190a3d5b9e36b1f09403723c0eff ""
   "e:/texlive/2021/texmf.cnf" 1641348799 713 e69b156964470283e0530f5060668171 ""
-  "j:/Documents/repos/ELEC-573/eusipco/main.tex" 1642733409 13037 8baaf5cfb013a35df2cfab879ba22301 ""
-  "main.aux" 1642733411 2188 9f08b19398b584453cbd9d5d5f82d637 "pdflatex"
-  "main.tex" 1642733409 13037 8baaf5cfb013a35df2cfab879ba22301 ""
+  "j:/Documents/repos/ELEC-573/eusipco/main.tex" 1643005021 14425 65c62797f3c8f8f08bd6b6b047c99746 ""
+  "main.aux" 1643005023 2314 be4bf0702dabd311c3b93dee4d03c4f6 "pdflatex"
+  "main.tex" 1643005021 14425 65c62797f3c8f8f08bd6b6b047c99746 ""
   (generated)
   "main.aux"
   "main.log"

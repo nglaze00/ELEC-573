@@ -56,7 +56,7 @@ email address or ORCID}
 
 \begin{abstract}
     We introduce a graph representation learning architecture to predict recurrence of medical events. 
-    We demonstrate its effectiveness for predicting recurrent strokes using electronic health records (EHRs), which are common, have high mortality rates, and can be mitigated with preventative care
+    We demonstrate its effectiveness for predicting recurrent strokes using electronic health records (EHRs), which are common, have high mortality rates, and can be mitigated with preventative care.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -65,7 +65,17 @@ TODO
 
 \section{Introduction}
 ~1 pg
+{\color{red}Need to start by saying recurrent events in general are common + useful to predict?}
+
+\subsection{Recurrent medical events}
+\begin{itemize}
+    \item Often, medical events can recur; the recurrent event can significantly increase risk to patient's wellbeing.
+    \item It's hard to predict initial events due to poor data availability; however, patients are often admitted to the hospital after the initial event, where they are closely monitored, providing lots of data for recurrence prediction
+\end{itemize}
+
 \subsection{Recurrent strokes}
+{\color{red}Frame as an example of an especially impactful recurrent event}
+
 \begin{itemize}
     \item Strokes are very common, and those who suffer them can permanently lose many of the skills necessary for daily life. Also, strokes account for ~10\% of deaths worldwide.
     \item Stroke recurrence increases mortality rate 17x, so understanding how to predict and mitigate recurrent strokes is therefore incredibly important to reducing patients' rates of mortality, disability, and financial hardship.
@@ -90,7 +100,7 @@ TODO
 \section{Problem definition}
 ~0.5 pg
 We leverage data observed about a patient during medical appointments to predict whether a medical event they previously experienced will recur. 
-Given a matrix $\bold{X} \in \mathbb{R}^{T \times N}$ describing $N$ features of a patient's condition at each of $T$ timesteps, 
+Given a matrix $\bold{X} \in \mathbb{R}^{T \times N}$ describing $N$ features of a patient's condition at each of $T$ timesteps (referred to as encounters), 
     and a vector $\bold{d} \in \mathbb{R}^M$ describing $M$ time-invariant characteristics of the patient, 
     we propose an architecture that learns a parametrized function $f_\theta : (\bold{X}, \bold{d}) \rightarrow \left[0, 1\right]$, 
     with parameters $\theta$, that computes the probability that the event will recur for the patient within an $m$-month window. 
@@ -110,10 +120,11 @@ Additional things:
 
 \subsection{HORDE framework}
 \begin{itemize}
-    \item We use the HORDE framework, introduced by (reference), to represent the time-varying matrix X as a heterogeneous network.
+    \item We use the HORDE framework, introduced by (reference), to represent the dataset as a series of heterogeneous networks.
+    \item Patient data is grouped by encounters (medical appointments); each network contains all patients' data from a particular encounter.
     \item the HORDE graph is constructed with both patients and features as nodes, drawing edges, weighted by feature value, 
             between patient and feature nodes at timesteps where that patient has a non-zero value for that feature
-    \item Why is this good? Efficient (EHRs are sparse), allows application of GCNs, supports heterogeneous feature types + including relationships (edges) between features
+    \item Why is this good? Efficient (EHRs are sparse), allows application of GCNs, supports heterogeneous feature types + including relationships (edges) between features {\color{red} (anything else?)}
 \end{itemize}
 
 \subsection{Our architecture}
@@ -135,7 +146,7 @@ Additional things:
 
 \subsection{Recurrent stroke dataset}
 
-In working with the University of Texas Health Science Center at Houston (UTHealth) for my senior capstone, 
+{\color{red} (copied from report)} In working with the University of Texas Health Science Center at Houston (UTHealth) for my senior capstone, 
 I have been granted access to a labeled database of EHRs, over up to 69 encounters, for 4,776 UTHealth hospital patients---one of the most comprehensive in the world of its kind. 
 Each patient in the database suffered at least one stroke, and approximately 25\% of these patients suffered recurrent strokes within one year as well. 
 The EHRs are represented in tabular form, and consist of approximately 5,000 features describing patients' demographics, along with their diagnoses, lab tests, measurements taken, and other information throughout their medical appointments. 
@@ -175,15 +186,21 @@ The raw text of approximately 2 million clinical notes is also included in the d
     \hline
     Feed-forward network& 0. & 0. & 0. & 0. \\
     \hline
-    Dense instead of LSTM (implemented)& 0. & 0. & 0. & 0. \\
+    Ours$_{L+H}$, dense lstm& 0.73 & 0.74 & 0.77 & 0.62 \\
     \hline
-    Dense instead of GCN (todo)& 0. & 0. & 0. & 0. \\
+    Ours$_{L+H}$, dense gcn& 0. & 0. & 0. & 0. \\
     \hline
-    Ours$_L$ (Laplacian)& 0. & 0. & 0. & 0. \\
+    Ours$_{L+H}$, first 5 encntrs& 0.84 & 0.59 & 0.76 & 0.59 \\
     \hline
-    Ours$_H$ (HetGCN)& 0. & 0. & 0. & 0. \\
+    Ours$_{L+H}$, first 2 encntrs& 0.59 & 0.56 & 0.62 & 0.40 \\
     \hline
-    Ours$_{L+H}$& 0. & 0. & 0. & 0. \\
+    Ours & 0.83 & 0.66 & 0.75 & 0.58 \\
+    \hline
+    Ours$_L$ (Laplacian)& 0.86 & 0.66 & 0.77 & 0.61 \\
+    \hline
+    Ours$_H$ (HetGCN)& 0.76 & 0.69 & 0.75 & 0.60 \\
+    \hline
+    Ours$_{L+H}$& 0.86 & 0.67 & 0.78 & 0.64 \\
     \hline
     % \multicolumn{5}{l}{$^{\mathrm{a}}$Sample of a Table footnote.}
     \end{tabular}
@@ -191,13 +208,16 @@ The raw text of approximately 2 million clinical notes is also included in the d
     \end{center}
     \end{table}
 
+{\color{red} Hyperparams: (default) 325 ep, hdim 256, pos rat 0.25 for 1yr, lr 0.0001, 64 timedim, 0.5 drop, 2 gcn (any L) 200 epochs, (any H) 128 hdim, (only H) 250 ep}
+
 Analysis of results, which will hopefully be that ours is the best!
 
 {\color{red} Is it interesting to include architectures like (first few timesteps only), (more GCN layers), etc.?}
+{\color{red} 23\% > 5, 53\% > 2; easy way to filter out which patients are actually affected / how to frame this?}
 
 \subsection{Performance by stroke type}
 
-Remove spec / sens? they're interesting though
+{\color{red}Remove spec / sens, for space? they're interesting though}
 \begin{table}[htbp]
     \caption{Performance on 1-year recurrence window.}
     \begin{center}
@@ -240,10 +260,10 @@ Remove spec / sens? they're interesting though
 \section{Conclusion}
 
 \begin{itemize}
-    \item We introduced a medical event recurrence prediction architecture, and demonstrated its effectiveness for the specific task of recurrent stroke.
+    \item We introduced a medical event recurrence prediction architecture, and demonstrated its effectiveness for the specific task of recurrent stroke prediction.
     \item Our model can enable more efficient application of preventative care, allowing hospitals to give necessary care to more patients, saving more lives.
     \item Future work includes incorporating additional data modalities, which our model supports.
-    \item Anything else?
+    \item {\color{red} Anything else?}
 \end{itemize}
 
 \section*{Acknowledgment}
